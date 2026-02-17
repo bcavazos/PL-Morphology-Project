@@ -13,6 +13,26 @@
 ### (e.g., longer internode length but smaller leaf area)
 ## Eventually we want to see if latitude is an important factor as well, (and year of record)
 
+# Load libraries
+## install.packages("librarian")
+librarian::shelf(tidyverse)
+
+# Clear environment + collect garbage
+rm(list = ls()); gc()
+
+## ------------------------------------------ ##
+# Initial Wrangling ----
+## ------------------------------------------ ##
+
+# Read in data
+pl_v01 <- read.csv(file.path("data", "PLdata_full.02.17.26.csv"))
+
+# Check structure
+dplyr::glimpse(pl_v01)
+
+
+
+
 
 
 # End ----
