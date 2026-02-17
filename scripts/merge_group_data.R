@@ -12,6 +12,9 @@ setwd("~/OneDrive - Stonehill College/UndergradResearch/Jules-MorphologyProject"
 ## install.packages("librarian")
 librarian::shelf(tidyverse, supportR)
 
+# Make needed folder(s)
+dir.create(path = file.path("data", "raw data"), showWarnings = F, recursive = T)
+
 # read in data
 apapane <- read.csv(file.path("data", "raw data", "apapane_data.csv"))
 iiwi <- read.csv(file.path("data", "raw data", "iiwi_data.csv"))
@@ -61,6 +64,6 @@ finaljoin <- finaljoin %>%
 
 # write csv
 write.csv(x = finaljoin, na = '', row.names = F,
-  file.path("data", "raw data", "PLdata_full.02.17.26.csv"))
+  file.path("data", "PLdata_full.02.17.26.csv"))
  
 # End ----
