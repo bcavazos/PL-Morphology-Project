@@ -81,5 +81,5 @@ vignettes/*.pdf
 *.txt
 
 # Folders to ignore
-data/
+# data/
 graphs/
