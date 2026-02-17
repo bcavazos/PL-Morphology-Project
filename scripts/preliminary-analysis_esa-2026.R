@@ -30,9 +30,27 @@ pl_v01 <- read.csv(file.path("data", "PLdata_full.02.17.26.csv"))
 # Check structure
 dplyr::glimpse(pl_v01)
 
+# Do some quality control (qc) checks
+## Any typos in range?
+sort(unique(pl_v01$range))
+## Value range for response vars all seem reasonable?
+hist(x = pl_v01$leaf_area_cm2)
+hist(x = pl_v01$infl_length_cm)
+hist(x = pl_v01$int_length_cm)
 
+# Do any needed repairs
+pl_v02 <- pl_v01 %>%
+  dplyr::mutate(range = dplyr::case_when(
+    range %in% c("invasive",  "invasive ",  "invasive ", "onvasive ") ~ "invasive",
+    range %in% c( "native", "native ") ~ "native",
+    nchar(range) == 0 ~ NA,
+    T ~ NA))
 
+# Re-check QC efforts
+sort(unique(pl_v02$range))
 
+# General structure check
+dplyr::glimpse(pl_v02)
 
 
 # End ----
