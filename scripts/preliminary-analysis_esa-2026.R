@@ -84,8 +84,24 @@ stats::anova(node_mod)
 (node_mean <- supportR::summary_table(data = pl_v02, groups = "range",
   response = "int_length_cm", drop_na = T))
 
-# Make some graphs!
+# Graph the leaf area data
+ggplot() +
+  geom_violin(data = pl_v02, aes(x = range, y = leaf_area_cm2, 
+    color = range)) +
+  geom_errorbar(data = lfar_mean, aes(x = range,
+    ymax = mean + std_dev, ymin = mean - std_dev),
+    width = 0.05, linewidth = 0.5) +
+  geom_point(data = lfar_mean, aes(x = range, y = mean, fill = range),
+    pch = 21, size = 5) +
+  labs(x = "Range", 
+    y = expression(paste("Leaf Area (c", m^2, ") ± SD"))) +
+  supportR::theme_lyon() +
+  theme(legend.position = "none",
+    axis.title.x = element_blank())
 
+# Export it
+ggsave(filename = file.path("graphs", "prelim-esa26_leaf-area-vs-range.png"),
+  height = 5, width = 5, units = "in")
 
 
 # End ----
