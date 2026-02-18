@@ -139,4 +139,23 @@ ggplot() +
 ggsave(filename = file.path("graphs", "prelim-esa26_node-len-vs-range.png"),
   height = 5, width = 5, units = "in")
 
+## ------------------------------------------ ##
+# Test 2° Hypotheses ----
+## ------------------------------------------ ##
+
+# Leaf area (with collection year and latitude) test
+lfar_mod2 <- lm(leaf_area_cm2 ~ range * idigbio.ev + idigbio.la, 
+  data = pl_v02)
+stats::anova(lfar_mod2)
+
+# Inflorescence length (with collection year and latitude) test
+infl_mod2 <- lm(infl_length_cm ~ range * idigbio.ev + idigbio.la, 
+  data = pl_v02)
+stats::anova(infl_mod2)
+
+# Internode length (with collection year and latitude) test
+node_mod <- lm(int_length_cm ~ range * idigbio.ev + idigbio.la, 
+  data = pl_v02)
+stats::anova(node_mod2)
+
 # End ----
