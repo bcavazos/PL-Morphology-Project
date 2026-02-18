@@ -86,15 +86,15 @@ stats::anova(node_mod)
 
 # Graph the leaf area data
 ggplot() +
-  geom_violin(data = pl_v02, aes(x = range, y = leaf_area_cm2, 
-    color = range)) +
-  geom_errorbar(data = lfar_mean, aes(x = range,
+  geom_jitter(data = pl_v02, aes(x = range, y = leaf_area_cm2), 
+    width = 0.25, alpha = 0.5) +
+  geom_errorbar(data = lfar_mean, aes(x = range, color = range,
     ymax = mean + std_dev, ymin = mean - std_dev),
-    width = 0.05, linewidth = 0.5) +
+    width = 0.1, linewidth = 1.5) +
   geom_point(data = lfar_mean, aes(x = range, y = mean, fill = range),
     pch = 21, size = 5) +
   labs(x = "Range", 
-    y = expression(paste("Leaf Area (c", m^2, ") ± SD"))) +
+    y = expression(paste("Leaf Area (c", m^2, ")"))) +
   supportR::theme_lyon() +
   theme(legend.position = "none",
     axis.title.x = element_blank())
@@ -103,5 +103,40 @@ ggplot() +
 ggsave(filename = file.path("graphs", "prelim-esa26_leaf-area-vs-range.png"),
   height = 5, width = 5, units = "in")
 
+# Graph the inflorescence data
+ggplot() +
+  geom_jitter(data = pl_v02, aes(x = range, y = infl_length_cm), 
+    width = 0.25, alpha = 0.5) +
+  geom_errorbar(data = infl_mean, aes(x = range, color = range,
+    ymax = mean + std_dev, ymin = mean - std_dev),
+    width = 0.1, linewidth = 1.5) +
+  geom_point(data = infl_mean, aes(x = range, y = mean, fill = range),
+    pch = 21, size = 5) +
+  labs(x = "Range", y = "Inflorescence Length (cm)") +
+  supportR::theme_lyon() +
+  theme(legend.position = "none",
+    axis.title.x = element_blank())
+
+# Export it
+ggsave(filename = file.path("graphs", "prelim-esa26_inflor-len-vs-range.png"),
+  height = 5, width = 5, units = "in")
+
+# Graph the internode data
+ggplot() +
+  geom_jitter(data = pl_v02, aes(x = range, y = int_length_cm), 
+    width = 0.25, alpha = 0.5) +
+  geom_errorbar(data = node_mean, aes(x = range, color = range,
+    ymax = mean + std_dev, ymin = mean - std_dev),
+    width = 0.1, linewidth = 1.5) +
+  geom_point(data = node_mean, aes(x = range, y = mean, fill = range),
+    pch = 21, size = 5) +
+  labs(x = "Range", y = "Internode Length (cm)") +
+  supportR::theme_lyon() +
+  theme(legend.position = "none",
+    axis.title.x = element_blank())
+
+# Export it
+ggsave(filename = file.path("graphs", "prelim-esa26_node-len-vs-range.png"),
+  height = 5, width = 5, units = "in")
 
 # End ----
