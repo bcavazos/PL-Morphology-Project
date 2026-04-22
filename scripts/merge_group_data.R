@@ -4,10 +4,6 @@
 # Merge all 4 groups' data into one data set so Jules can fill in missing pieces
 ###################################
 
-# set wd
-setwd("~/OneDrive - Stonehill College/UndergradResearch/Jules-MorphologyProject")
-  # different on your computer
-
 # load libraries
 ## install.packages("librarian")
 librarian::shelf(tidyverse, supportR)
