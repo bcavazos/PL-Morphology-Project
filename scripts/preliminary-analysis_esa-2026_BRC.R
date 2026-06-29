@@ -56,6 +56,12 @@ sort(unique(pl_v02$range))
 # General structure check
 dplyr::glimpse(pl_v02)
 
+# Repair date format 
+# some dates are MM/DD/YY ("9/13/31") and some are YYYY/MM/DD ("1849/07/01")
+# need to also include a 4 digit year because .../71 could be 1871 or 1971
+
+# quickest way might be an if else statement? if there are 4 digits before the slash, it needs to be transformed... not sure how to fix turning the 2 digit year into 4 digit year without looking back to see if that was included in the og excel file
+
 ## ------------------------------------------ ##
 # Test Core Hypotheses ----
 ## ------------------------------------------ ##
@@ -144,7 +150,7 @@ ggsave(filename = file.path("graphs", "prelim-esa26_node-len-vs-range.png"),
   height = 5, width = 5, units = "in")
 
 ## ------------------------------------------ ##
-# Test 2° Hypotheses ----
+# Test Secondary Hypotheses ----
 ## ------------------------------------------ ##
 
 # Leaf area (with collection year and latitude) test
@@ -158,7 +164,7 @@ infl_mod2 <- lm(infl_length_cm ~ range * idigbio.ev + idigbio.la,
 stats::anova(infl_mod2)
 
 # Internode length (with collection year and latitude) test
-node_mod <- lm(int_length_cm ~ range * idigbio.ev + idigbio.la, 
+node_mod2 <- lm(int_length_cm ~ range * idigbio.ev + idigbio.la, 
   data = pl_v02)
 stats::anova(node_mod2)
 
