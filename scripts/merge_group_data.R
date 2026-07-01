@@ -1,6 +1,5 @@
 ###################################
 # Brittany Cavazos
-# Feb 11 2026
 # Merge all 4 groups' data into one data set so Jules can fill in missing pieces
 ###################################
 
@@ -50,16 +49,49 @@ nene <- nene %>%
 
 # combine all four data sets 
 # should end with a data set that is 19 variables long and 947 rows long
-join1 <- dplyr::full_join(apapane, pueo)
-join2 <- dplyr::full_join(join1, nene)
-finaljoin <- dplyr::full_join(join2, iiwi)
+join1 <- rbind(apapane, pueo) # both measured infl length
+join2 <- rbind(iiwi, nene) # both measured internode length
+alltraitdata_v01 <- dplyr::full_join(join1, join2)
+
+# check structure
+glimpse(alltraitdata_v01)
 
 # fix ordering of columns
-finaljoin <- finaljoin %>%
-  dplyr::relocate(int_length_cm, .before = initials)
+alltraitdata_v02 <- alltraitdata_v01 %>%
+  dplyr::relocate(int_length_cm, .before = initials) %>%
+  dplyr::rename(country = dwc.countr,
+                abbrev_country = idigbio.is,
+                longitude = idigbio.lo,
+                latitude = idigbio.la,
+                year = idigbio.ev,
+                date = idigbio._1)
+
+glimpse(alltraitdata_v02)
+
+# fix dates!
+alltraitdata_v03 <- alltraitdata_v02 %>%
+if(grepl("^\\d{4}/\\d{2}/\\d{2}$", date)) {
+  tidyr::separate_wider_delim(cols = date, delim = "/", cols_remove = FALSE,
+                               names = c("year", "month", "day"))
+} else{tidyr::separate_wider_delim(cols = date, delim = "/", cols_remove = FALSE,
+                                 names = c("month2", "day2", "year2"))
+}
+
+alltraitdata_v03 <- alltraitdata_v02 %>%
+  dplyr::mutate(date = coalesce(
+    lubridate::ymd(date),
+    lubridate::mdy(date))) %>%
+  tidyr::separate_wider_delim(cols = date, delim = "-", cols_remove = FALSE,
+                              names = c("badyear", "month", "day")) %>%
+  tidyr::unite("truedate", year, month, day, sep = "-") %>%
+  dplyr::select(-date, -badyear) %>%
+  dplyr::mutate(date = as.Date(truedate)) %>%
+  dplyr::select(-truedate) %>%
+  dplyr::relocate(date, .before = range)
+
 
 # write csv
-write.csv(x = finaljoin, na = '', row.names = F,
+write.csv(x = alltraitdata_v03, na = '', row.names = F,
   file.path("data", "PLdata_full.02.17.26.csv"))
  
 # End ----
