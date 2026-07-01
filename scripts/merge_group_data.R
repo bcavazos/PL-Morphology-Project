@@ -63,32 +63,24 @@ alltraitdata_v02 <- alltraitdata_v01 %>%
                 abbrev_country = idigbio.is,
                 longitude = idigbio.lo,
                 latitude = idigbio.la,
-                year = idigbio.ev,
-                date = idigbio._1)
+                year = idigbio.ev)
 
 glimpse(alltraitdata_v02)
 
 # fix dates!
-alltraitdata_v03 <- alltraitdata_v02 %>%
-if(grepl("^\\d{4}/\\d{2}/\\d{2}$", date)) {
-  tidyr::separate_wider_delim(cols = date, delim = "/", cols_remove = FALSE,
-                               names = c("year", "month", "day"))
-} else{tidyr::separate_wider_delim(cols = date, delim = "/", cols_remove = FALSE,
-                                 names = c("month2", "day2", "year2"))
-}
 
 alltraitdata_v03 <- alltraitdata_v02 %>%
-  dplyr::mutate(date = coalesce(
-    lubridate::ymd(date),
-    lubridate::mdy(date))) %>%
-  tidyr::separate_wider_delim(cols = date, delim = "-", cols_remove = FALSE,
+  dplyr::mutate(idigbio._1 = coalesce(
+    lubridate::ymd(idigbio._1),
+    lubridate::mdy(idigbio._1))) %>%
+  tidyr::separate_wider_delim(cols = idigbio._1, delim = "-", cols_remove = FALSE,
                               names = c("badyear", "month", "day")) %>%
-  tidyr::unite("truedate", year, month, day, sep = "-") %>%
-  dplyr::select(-date, -badyear) %>%
-  dplyr::mutate(date = as.Date(truedate)) %>%
-  dplyr::select(-truedate) %>%
+  tidyr::unite("date", year, month, day, sep = "-") %>%
+  dplyr::select(-badyear) %>%
+  dplyr::mutate(date = as.Date(date)) %>%
   dplyr::relocate(date, .before = range)
 
+glimpse(alltraitdata_v03)
 
 # write csv
 write.csv(x = alltraitdata_v03, na = '', row.names = F,
