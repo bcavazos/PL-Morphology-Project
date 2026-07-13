@@ -166,7 +166,7 @@ ggplot(traits_v02, aes(x = latitude, y = leaf_area_cm2, color = year)) +
 
 ggplot(traits_v02, aes(x = range, y = leaf_area_cm2)) +
   geom_boxplot() +
-  geom_violin() +
+  geom_violin(alpha = 0.5) +
   theme_classic()
 
 
@@ -193,6 +193,6 @@ ggplot(traits_v02, aes(x = latitude, y = infl_length_cm)) +
   theme_classic()
 
 ggplot(traits_v02, aes(x = range, y = infl_length_cm)) +
-  geom_violin()+
   geom_boxplot() +
+  geom_violin(alpha = 0.5)+
   theme_classic()
