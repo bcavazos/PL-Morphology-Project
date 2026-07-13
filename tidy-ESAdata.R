@@ -4,8 +4,8 @@
 ###################################
 
 # load libraries
-## install.packages("librarian")
-librarian::shelf(tidyverse, supportR)
+## install.packages("librarian", "textclean")
+librarian::shelf(tidyverse, supportR, textclean)
 
 # Make needed folder(s)
 dir.create(path = file.path("data", "raw data"), showWarnings = F, recursive = T)
@@ -29,7 +29,11 @@ traits_v02 <- traits_v01 %>%
                 latitude = idigbio.la,
                 country = dwc.countr) %>%
   dplyr::relocate(date, .before = range) %>%
-  dplyr::mutate(int_length_cm = coalesce(int_length_Jules, int_length_cm)) %>%
+  dplyr::filter(country == "united states" | country == "canada" | country == "netherlands" | country == "norway") %>%
+  dplyr::mutate(int_length_cm = coalesce(int_length_Jules, int_length_cm), 
+                range = textclean::replace_non_ascii(range),
+                range = case_when(country %in% c("canada", "united states") ~ "invasive",
+                                  country %in% c("norway", "netherlands") ~ "native")) %>%
   dplyr::select(-badyear, 
                 -Column1, 
                 -Broken.Link, 
@@ -44,7 +48,8 @@ traits_v02 <- traits_v01 %>%
                 -idigbio.is,
                 -int_length_Jules,
                 -initials,
-                -date_collected)
+                -date_collected) 
+
 
 glimpse(traits_v02)
 
