@@ -134,12 +134,12 @@ INF_model5 <- lm(infl_length_cm ~ range, data = traits_v02) # range
 #INF_model6 <- lm(infl_length_cm ~ year, data = traits_v02) # NS
 INF_model7 <- lm(infl_length_cm ~ latitude, data = traits_v02) # latitude
 
-stats::anova(INF_model1)
-stats::anova(INF_model2)
-stats::anova(INF_model3) # best model
-stats::anova(INF_model4)
+# stats::anova(INF_model1)
+# stats::anova(INF_model2)
+# stats::anova(INF_model3)
+# stats::anova(INF_model4)
 stats::anova(INF_model5)
-stats::anova(INF_model6)
+# stats::anova(INF_model6)
 stats::anova(INF_model7)
 
 # year has strongest affect
