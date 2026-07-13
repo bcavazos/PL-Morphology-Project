@@ -83,3 +83,6 @@ vignettes/*.pdf
 # Folders to ignore
 # data/
 graphs/
+
+# Files to ignore
+PLdata_full*.csv
