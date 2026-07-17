@@ -196,3 +196,16 @@ ggplot(traits_v02, aes(x = range, y = infl_length_cm)) +
   geom_boxplot() +
   geom_violin(alpha = 0.5)+
   theme_classic()
+
+
+ggplot(traits_v02, aes(x = leaf_area_cm2, y = infl_length_cm, fill = range)) +
+  geom_point()+
+  geom_smooth(method = "lm")+
+  theme_classic()
+
+ggplot(traits_v02, aes(x = infl_length_cm, y = int_length_cm, color = range, fill = range)) +
+  geom_point()+
+  geom_smooth(method = "lm")+
+  theme_classic()
+
+plot(traits_v02$infl_length_cm ~ traits_v02$leaf_area_cm2)
