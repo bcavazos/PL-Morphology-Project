@@ -7,7 +7,7 @@
 rm(list = ls()); gc()
 
 # Libraries
-librarian::shelf(tidyverse, lme4, bbmle)
+librarian::shelf(tidyverse, lme4, bbmle, lmerTest)
 
 # Read in tidy data
 traits_v01 <- read.csv("data/PL_traits-tidy.csv") 
@@ -19,6 +19,16 @@ traits_v02 <- traits_v01 %>%
   filter(julianday > 100 & julianday < 300) 
 
 glimpse(traits_v02)
+
+
+# create some data subsets to play around with later -- 
+
+# just samples in the US (to look closer at change over time or if longitude (moving westward) makes a difference)
+PLUS <- traits_v02 %>%
+  filter(range == "invasive")
+
+post_introduction <- traits_v02 %>%
+  filter(year > 1900)
 
 # Date Exploration ----#
 summary(as.factor(traits_v02$country))
@@ -47,13 +57,9 @@ ggplot(traits_v02, aes(x = year, fill = range)) +
 # representation across month?
 hist(traits_v02$month)
 
-# nope -- primarily during summer months, which makes sense.. PL in January is suspect (would have to look at where it's located)
-
 ggplot(traits_v02, aes(x = month, fill = range)) +
   geom_histogram(position = "identity", alpha =0.8) +
   theme_classic()
-
-# many of them are from native range.. which seems impossible so I would be tempted to filter those out
 
 # are our traits of interest normally distributed?
 hist(traits_v02$leaf_area_cm2) # ish
@@ -71,8 +77,8 @@ hist(traits_v02$infl_length_cm) #ish
     # since range and lat are correlated so tightly, won't put them in the same model
 # LA_model1 <- lm(leaf_area_cm2 ~ range * year, data = traits_v02) # NS
 # LA_model2 <- lm(leaf_area_cm2 ~ latitude * year, data = traits_v02) # NS
-LA_model3 <- lm(leaf_area_cm2 ~ range + year, data = traits_v02) # both sig
-LA_model4 <- lm(leaf_area_cm2 ~ latitude + year, data = traits_v02) # both sig
+# LA_model3 <- lm(leaf_area_cm2 ~ range + year, data = traits_v02) # NS
+# LA_model4 <- lm(leaf_area_cm2 ~ latitude + year, data = traits_v02) # NS
 LA_model5 <- lm(leaf_area_cm2 ~ range, data = traits_v02) # range
 LA_model6 <- lm(leaf_area_cm2 ~ year, data = traits_v02) # year
 LA_model7 <- lm(leaf_area_cm2 ~ latitude, data = traits_v02) # latitude
@@ -85,7 +91,7 @@ stats::anova(LA_model5)
 stats::anova(LA_model6)
 stats::anova(LA_model7)
 
-# year has strongest affect
+
 AICctab(LA_model3, LA_model4, weights = TRUE)
 
 summary(LA_model4)
@@ -145,7 +151,7 @@ stats::anova(INF_model5)
 stats::anova(INF_model7)
 
 # year has strongest affect
-AICctab(INF_model5, INF_model7, weights = TRUE)
+AICctab(INF_model2, INF_model5, INF_model7, weights = TRUE)
 
 summary(INF_model7)
 # model 7 is best fit - infl is best explained by latitude, longer inf at lower latitudes
@@ -211,3 +217,4 @@ ggplot(traits_v02, aes(x = infl_length_cm, y = int_length_cm, color = range, fil
   theme_classic()
 
 plot(traits_v02$infl_length_cm ~ traits_v02$leaf_area_cm2)
+
