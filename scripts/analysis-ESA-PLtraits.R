@@ -14,7 +14,9 @@ traits_v01 <- read.csv("data/PL_traits-tidy.csv")
 
 # remove rows where none of the 3 traits are measured (likely seedlings or broken link)
 traits_v02 <- traits_v01 %>%
-  dplyr:: filter(!(is.na(leaf_area_cm2) & is.na(infl_length_cm) & is.na(int_length_cm))) 
+  dplyr:: filter(!(is.na(leaf_area_cm2) & is.na(infl_length_cm) & is.na(int_length_cm))) %>%
+  dplyr::mutate(julianday = yday(date)) %>%
+  filter(julianday > 100 & julianday < 300) 
 
 glimpse(traits_v02)
 
