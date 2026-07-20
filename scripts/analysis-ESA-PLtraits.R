@@ -7,7 +7,7 @@
 rm(list = ls()); gc()
 
 # Libraries
-librarian::shelf(tidyverse, lme4, bbmle, lmerTest)
+librarian::shelf(tidyverse, lme4, bbmle, lmerTest, emmeans)
 
 # Read in tidy data
 traits_v01 <- read.csv("data/PL_traits-tidy.csv") 
@@ -67,66 +67,62 @@ hist(traits_v02$int_length_cm) # ish
 hist(traits_v02$infl_length_cm) #ish
 # Gaussian distribution for analysis will be okay
 
+# Analysis
+
+### Leaf Area ###
+  # since range and lat are correlated so tightly, won't put them in the same model
+  # include Julian Day 
+
+LA_model1 <- lm(leaf_area_cm2 ~ range * year * julianday, data = traits_v02) 
+LA_model2 <- lm(leaf_area_cm2 ~ range * year + julianday, data = traits_v02) 
+LA_model3 <- lm(leaf_area_cm2 ~ range + year * julianday, data = traits_v02)
+  # interactions are NS
+
+LA_model4 <- lm(leaf_area_cm2 ~ range + year + julianday, data = traits_v02) 
+LA_model5 <- lm(leaf_area_cm2 ~ range + year, data = traits_v02) 
+# year is NS
+
+LA_model6 <- lm(leaf_area_cm2 ~ range + julianday, data = traits_v02) #*
+LA_model7 <- lm(leaf_area_cm2 ~ julianday + year, data = traits_v02) #*
 
 
-# Analysis ----
+AICctab(LA_model4, LA_model5, LA_model6, LA_model7, weights = TRUE)
 
-# three traits - internode, inflorescence, and leaf area
+summary(LA_model6) # use this for LA results
 
-# leaf area first 
-    # since range and lat are correlated so tightly, won't put them in the same model
-# LA_model1 <- lm(leaf_area_cm2 ~ range * year, data = traits_v02) # NS
-# LA_model2 <- lm(leaf_area_cm2 ~ latitude * year, data = traits_v02) # NS
-# LA_model3 <- lm(leaf_area_cm2 ~ range + year, data = traits_v02) # NS
-# LA_model4 <- lm(leaf_area_cm2 ~ latitude + year, data = traits_v02) # NS
-LA_model5 <- lm(leaf_area_cm2 ~ range, data = traits_v02) # range
-LA_model6 <- lm(leaf_area_cm2 ~ year, data = traits_v02) # year
-LA_model7 <- lm(leaf_area_cm2 ~ latitude, data = traits_v02) # latitude
-
-#stats::anova(LA_model1)
-#stats::anova(LA_model2)
-stats::anova(LA_model3)
-stats::anova(LA_model4) # ***
-stats::anova(LA_model5)
+summary(LA_model7)
 stats::anova(LA_model6)
-stats::anova(LA_model7)
-
-
-AICctab(LA_model3, LA_model4, weights = TRUE)
-
-summary(LA_model4)
-# models are technically tied but model 4 fits the best - the additive latitude and year
-# LA gets marginally larger with increasing latitudes and LA has gets smaller over time
-
+stats::anova(LA_model8)
+stats::anova(LA_model9)
 
 # check model fit***
 
-
-
 # Internode second
-# leaf area first 
-# since range and lat are correlated so tightly, won't put them in the same model
-# INT_model1 <- lm(int_length_cm ~ range * year, data = traits_v02) # NS
-# INT_model2 <- lm(int_length_cm ~ latitude * year, data = traits_v02) # NS
-INT_model3 <- lm(int_length_cm ~ range + year, data = traits_v02) # both sig
-INT_model4 <- lm(int_length_cm ~ latitude + year, data = traits_v02) # both sig
-# INT_model5 <- lm(int_length_cm ~ range, data = traits_v02) # range
-# INT_model6 <- lm(int_length_cm ~ year, data = traits_v02) # year
-# INT_model7 <- lm(int_length_cm ~ latitude, data = traits_v02) # latitude
+
+
+INT_model1  <- lm(int_length_cm ~ range * year * julianday, data = traits_v02) 
+INT_model2 <- lm(int_length_cm ~ range * year + julianday, data = traits_v02) 
+INT_model3 <- lm(int_length_cm ~ range + year * julianday, data = traits_v02)
+# interactions are NS
+
+INT_model4 <- lm(int_length_cm ~ range + year + julianday, data = traits_v02) 
+INT_model5 <- lm(int_length_cm ~ range + year, data = traits_v02) 
+INT_model6 <- lm(int_length_cm ~ range + julianday, data = traits_v02) #*
+INT_model7 <- lm(int_length_cm ~ julianday + year, data = traits_v02) #*
 
 # stats::anova(INT_model1)
 # stats::anova(INT_model2)
-stats::anova(INT_model3) # best model
-stats::anova(INT_model4)
-# stats::anova(INT_model5)
-# stats::anova(INT_model6)
-# stats::anova(INT_model7)
+# stats::anova(INT_model3) 
+stats::anova(INT_model4) #** best model
+stats::anova(INT_model5)
+stats::anova(INT_model6) # second best
+stats::anova(INT_model7)
 
 # year has strongest affect
-AICctab(INT_model3, INT_model4, weights = TRUE)
+AICctab(INT_model4, INT_model5, INT_model6, INT_model7, weights = TRUE)
 
-summary(INT_model3)
-# model 3 is best fit - the additive range and year
+summary(INT_model4)
+# model 4 is best fit - the additive range and year
 # internode is longer in native range and smaller over time latitudes and LA has gets shorter over time
 
 
@@ -134,13 +130,16 @@ summary(INT_model3)
 
 # Infl third
 
-#INF_model1 <- lm(infl_length_cm ~ range * year, data = traits_v02) # NS
-#INF_model2 <- lm(infl_length_cm ~ latitude * year, data = traits_v02) # NS
-#INF_model3 <- lm(infl_length_cm ~ range + year, data = traits_v02) # range only
-#INF_model4 <- lm(infl_length_cm ~ latitude + year, data = traits_v02) # lat only
-INF_model5 <- lm(infl_length_cm ~ range, data = traits_v02) # range
-#INF_model6 <- lm(infl_length_cm ~ year, data = traits_v02) # NS
-INF_model7 <- lm(infl_length_cm ~ latitude, data = traits_v02) # latitude
+INF_model1  <- lm(infl_length_cm ~ range * year * julianday, data = traits_v02) 
+INF_model2 <- lm(infl_length_cm ~ range * year + julianday, data = traits_v02) 
+INF_model3 <- lm(infl_length_cm ~ range + year * julianday, data = traits_v02)
+# interactions are NS
+INF_model3.5 <- lm(infl_length_cm ~ range * year, data = traits_v02)
+INF_model4 <- lm(infl_length_cm ~ range + year + julianday, data = traits_v02) 
+INF_model5 <- lm(infl_length_cm ~ range + year, data = traits_v02) 
+INF_model6 <- lm(infl_length_cm ~ range + julianday, data = traits_v02) 
+INF_model7 <- lm(infl_length_cm ~ julianday + year, data = traits_v02) 
+INF_model8 <- lm(infl_length_cm ~ range, data = traits_v02)
 
 # stats::anova(INF_model1)
 # stats::anova(INF_model2)
@@ -150,71 +149,106 @@ stats::anova(INF_model5)
 # stats::anova(INF_model6)
 stats::anova(INF_model7)
 
-# year has strongest affect
-AICctab(INF_model2, INF_model5, INF_model7, weights = TRUE)
+summary(INF_model2)
 
-summary(INF_model7)
-# model 7 is best fit - infl is best explained by latitude, longer inf at lower latitudes
+
+AICctab(INF_model2, INF_model4, INF_model5, INF_model6, INF_model7, INF_model8, weights = TRUE)
+
+# models 5, 6, 2
+
+# range matters the most but there is a marginally significant interaction between range and year
 
 # check model fit ***
 
 
 ### visualization
 
-# leaf area - lat and year
-ggplot(traits_v02, aes(x = year, y = leaf_area_cm2, color = latitude)) +
-  geom_point() +
-  geom_smooth() +
-  theme_classic()
 
-ggplot(traits_v02, aes(x = latitude, y = leaf_area_cm2, color = year)) +
-  geom_point() +
-  geom_smooth(method = "lm") +
-  theme_classic()
-
-ggplot(traits_v02, aes(x = range, y = leaf_area_cm2)) +
-  geom_boxplot() +
-  geom_violin(alpha = 0.5) +
-  theme_classic()
+ggplot(traits_v02, aes(x = year, y = infl_length_cm, color = range, fill = range)) + geom_point() + geom_smooth(method = "lm") + theme_classic()
 
 
-ggplot(traits_v02, aes(x = year, y = leaf_area_cm2, color = range)) +
-  geom_point() +
-  geom_smooth(method = "lm") +
-  theme_classic()
+# Leaf area - just range ####
 
-# internode - range + year
+# raw data
+ggplot(traits_v02, aes(x = range, y = leaf_area_cm2, fill = range)) +
+  geom_boxplot(show.legend = FALSE) +
+  geom_violin(alpha = 0.25, show.legend = FALSE) +
+  labs(x = "", y = expression("Leaf Area (" * cm^2 * ")")) + 
+  scale_fill_manual(values = c("blue", "green")) + # change to the colors you want
+  scale_x_discrete(labels = c(
+    "invasive" = "Nonnative Range",
+    "native" = "Native Range"))+
+  theme_classic(base_size = 20)
+
+# model results w/ 95% CIs
+LAmodel <- lm(leaf_area_cm2 ~ range + julianday, data = traits_v02)
+range_results <- as.data.frame(emmeans(LAmodel, ~ range))
+
+ggplot(range_results, aes(x = range, y = emmean, fill = range)) +
+  geom_point(show.legend = FALSE) +
+  geom_errorbar(
+    aes(ymin = lower.CL, ymax = upper.CL),
+    width = 0.2
+  ) +
+  labs(
+    x = "",
+    y = expression("Leaf Area (" * cm^2 * ")")
+  ) +
+  scale_fill_manual(values = c("blue", "green")) +
+  scale_x_discrete(labels = c(
+    "invasive" = "Nonnative Range",
+    "native" = "Native Range"
+  )) +
+  theme_classic(base_size = 20)
+
+# Internode - range + year ####
+
+model <- lm(int_length_cm ~ year + range, data = traits_v02)
+
+newdat <- expand.grid(
+  year = seq(min(traits_v02$year), max(traits_v02$year), length.out = 100),
+  range = levels(as.factor(traits_v02$range))
+)
+
+newdat$pred <- predict(model, newdata = newdat)
+
 ggplot(traits_v02, aes(x = year, y = int_length_cm, color = range)) +
   geom_point() +
-  geom_smooth(method = "lm") + 
-  theme_classic()
+  labs(x = "Year", y = "Internode Length (cm)") + 
+  scale_color_manual(name = "Range", labels = c("Nonnative", "Native"), values = c("blue", "green")) +
+  geom_line(data = newdat, aes(y = pred)) + 
+  theme_classic(base_size = 20)
 
-ggplot(traits_v02, aes(x = range, y = int_length_cm, color = year)) +
-  geom_boxplot() +
-  geom_jitter() +
-  theme_classic()
+# infl - year by range interaction ####
 
-# inf - lat
-ggplot(traits_v02, aes(x = latitude, y = infl_length_cm)) +
+# raw data
+
+ggplot(traits_v02, aes(x = year, y = infl_length_cm, color = range)) +
   geom_point()+
+  labs(x = "Year", y = "Inflorescence Length (cm)") + 
+  scale_color_manual(name = "Range", labels = c("Nonnative", "Native"), values = c("blue", "green")) +
   geom_smooth(method = "lm") +
-  theme_classic()
+  theme_classic(base_size = 20)
 
-ggplot(traits_v02, aes(x = range, y = infl_length_cm)) +
-  geom_boxplot() +
-  geom_violin(alpha = 0.5)+
-  theme_classic()
+# model resutls w/ 95% CIs
+model.inf <- lm(infl_length_cm ~ year * range, data = traits_v02)
 
+newdat <- expand.grid(
+  year = seq(min(traits_v02$year), max(traits_v02$year), length.out = 100),
+  range = levels(as.factor(traits_v02$range))
+)
 
-ggplot(traits_v02, aes(x = leaf_area_cm2, y = infl_length_cm, fill = range)) +
-  geom_point()+
-  geom_smooth(method = "lm")+
-  theme_classic()
+pred <- predict(model.inf, newdata = newdat, interval = "confidence")
 
-ggplot(traits_v02, aes(x = infl_length_cm, y = int_length_cm, color = range, fill = range)) +
-  geom_point()+
-  geom_smooth(method = "lm")+
-  theme_classic()
+newdat <- cbind(newdat, pred)
 
-plot(traits_v02$infl_length_cm ~ traits_v02$leaf_area_cm2)
+newdat$pred <- predict(model.inf, newdata = newdat)
 
+ggplot(newdat, aes(x = year, y = fit, color = range, fill = range)) +
+  geom_ribbon( aes(ymin = lwr, ymax = upr), alpha = 0.2, color = NA) +
+  geom_line(size = 1.2) +
+  labs(x = "Year", y = "Inflorescence Length (cm)", color = "Range", fill = "Range") +
+  scale_color_manual(labels = c("invasive" = "Nonnative", "native" = "Native"), values = c("blue", "green")) +
+  scale_fill_manual(labels = c("invasive" = "Nonnative","native" = "Native"),
+    values = c("blue", "green")) +
+  theme_classic(base_size = 20)
