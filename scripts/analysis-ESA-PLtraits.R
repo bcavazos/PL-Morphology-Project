@@ -174,7 +174,7 @@ ggplot(traits_v02, aes(x = range, y = leaf_area_cm2, fill = range)) +
   geom_boxplot(show.legend = FALSE) +
   geom_violin(alpha = 0.25, show.legend = FALSE) +
   labs(x = "", y = expression("Leaf Area (" * cm^2 * ")")) + 
-  scale_fill_manual(values = c("blue", "green")) + # change to the colors you want
+  scale_fill_manual(values = c("mediumpurple2", "gray")) + # change to the colors you want
   scale_x_discrete(labels = c(
     "invasive" = "Nonnative Range",
     "native" = "Native Range"))+
@@ -194,7 +194,7 @@ ggplot(range_results, aes(x = range, y = emmean, fill = range)) +
     x = "",
     y = expression("Leaf Area (" * cm^2 * ")")
   ) +
-  scale_fill_manual(values = c("blue", "green")) +
+  scale_fill_manual(values = c("purple", "black")) +
   scale_x_discrete(labels = c(
     "invasive" = "Nonnative Range",
     "native" = "Native Range"
@@ -215,7 +215,7 @@ newdat$pred <- predict(model, newdata = newdat)
 ggplot(traits_v02, aes(x = year, y = int_length_cm, color = range)) +
   geom_point() +
   labs(x = "Year", y = "Internode Length (cm)") + 
-  scale_color_manual(name = "Range", labels = c("Nonnative", "Native"), values = c("blue", "green")) +
+  scale_color_manual(name = "Range", labels = c("Nonnative", "Native"), values = c("purple", "black")) +
   geom_line(data = newdat, aes(y = pred)) + 
   theme_classic(base_size = 20)
 
@@ -226,7 +226,7 @@ ggplot(traits_v02, aes(x = year, y = int_length_cm, color = range)) +
 ggplot(traits_v02, aes(x = year, y = infl_length_cm, color = range)) +
   geom_point()+
   labs(x = "Year", y = "Inflorescence Length (cm)") + 
-  scale_color_manual(name = "Range", labels = c("Nonnative", "Native"), values = c("blue", "green")) +
+  scale_color_manual(name = "Range", labels = c("Nonnative", "Native"), values = c("purple", "black")) +
   geom_smooth(method = "lm") +
   theme_classic(base_size = 20)
 
@@ -248,7 +248,7 @@ ggplot(newdat, aes(x = year, y = fit, color = range, fill = range)) +
   geom_ribbon( aes(ymin = lwr, ymax = upr), alpha = 0.2, color = NA) +
   geom_line(size = 1.2) +
   labs(x = "Year", y = "Inflorescence Length (cm)", color = "Range", fill = "Range") +
-  scale_color_manual(labels = c("invasive" = "Nonnative", "native" = "Native"), values = c("blue", "green")) +
+  scale_color_manual(labels = c("invasive" = "Nonnative", "native" = "Native"), values = c("purple", "black")) +
   scale_fill_manual(labels = c("invasive" = "Nonnative","native" = "Native"),
-    values = c("blue", "green")) +
+    values = c("purple", "black")) +
   theme_classic(base_size = 20)
