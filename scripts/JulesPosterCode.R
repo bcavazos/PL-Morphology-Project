@@ -165,3 +165,17 @@ ggplot(traits_v02, aes(x = year, y = infl_length_cm, color = range)) +
   labs( x = "Year", y = "Inflorescence Length (cm)") +
   scale_color_manual(values = c("native" = "purple", "invasive" = "black"))
 
+
+
+## Jules note - seeing if possible to put Julian day on in a tidy way 
+## but do we need to condense julian day to the growing months first?
+range(traits_v02$julianday)
+#nope, already done! thanks 
+
+ggplot(traits_v02, aes(x = julianday, y = int_length_cm, color = range)) +
+  geom_point() +
+  geom_smooth(method = "lm") + 
+  theme_classic() +
+  labs( x = "Julian Day", y = "Internode Length (cm)") +
+  scale_color_manual(values = c("native" = "purple", "invasive" = "black"))  + 
+  theme_classic(base_size = 20)
