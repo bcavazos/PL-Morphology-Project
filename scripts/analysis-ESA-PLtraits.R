@@ -168,13 +168,14 @@ ggplot(traits_v02, aes(x = year, y = infl_length_cm, color = range, fill = range
 
 
 # Leaf area - just range ####
+colors <- c("#762a83", "#7fbf7b")
 
 # raw data
 ggplot(traits_v02, aes(x = range, y = leaf_area_cm2, fill = range)) +
   geom_boxplot(show.legend = FALSE) +
   geom_violin(alpha = 0.25, show.legend = FALSE) +
   labs(x = "", y = expression("Leaf Area (" * cm^2 * ")")) + 
-  scale_fill_manual(values = c("mediumpurple2", "gray")) + # change to the colors you want
+  scale_fill_manual(values = colors) + 
   scale_x_discrete(labels = c(
     "invasive" = "Nonnative Range",
     "native" = "Native Range"))+
@@ -184,22 +185,25 @@ ggplot(traits_v02, aes(x = range, y = leaf_area_cm2, fill = range)) +
 LAmodel <- lm(leaf_area_cm2 ~ range + julianday, data = traits_v02)
 range_results <- as.data.frame(emmeans(LAmodel, ~ range))
 
-ggplot(range_results, aes(x = range, y = emmean, fill = range)) +
-  geom_point(show.legend = FALSE) +
-  geom_errorbar(
-    aes(ymin = lower.CL, ymax = upper.CL),
-    width = 0.2
-  ) +
+ggplot(range_results, aes(x = range, y = emmean, fill = range, color = range)) +
+  geom_point(show.legend = FALSE, size = 5, aes(shape = range, fill = range)) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL,
+    width = 0.2)) +
   labs(
     x = "",
     y = expression("Leaf Area (" * cm^2 * ")")
   ) +
-  scale_fill_manual(values = c("purple", "black")) +
+  scale_fill_manual(values = colors) +
+  scale_shape_manual(name = "Range", labels = c("Nonnative", "Native"), values = c("native" = 21, "invasive" = 23)) +
+  scale_color_manual(values = colors) +
   scale_x_discrete(labels = c(
     "invasive" = "Nonnative Range",
     "native" = "Native Range"
   )) +
-  theme_classic(base_size = 20)
+  theme_classic(base_size = 20) + 
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.2, 0.95),
+        legend.title = element_blank())
 
 # Internode - range + year ####
 
@@ -215,20 +219,27 @@ newdat$pred <- predict(model, newdata = newdat)
 ggplot(traits_v02, aes(x = year, y = int_length_cm, color = range)) +
   geom_point() +
   labs(x = "Year", y = "Internode Length (cm)") + 
-  scale_color_manual(name = "Range", labels = c("Nonnative", "Native"), values = c("purple", "black")) +
+  scale_color_manual(name = "Range", labels = c("Nonnative", "Native"), values = colors) +
   geom_line(data = newdat, aes(y = pred)) + 
   theme_classic(base_size = 20)
 
 # infl - year by range interaction ####
 
 # raw data
-
-ggplot(traits_v02, aes(x = year, y = infl_length_cm, color = range)) +
-  geom_point()+
+traits_v02 %>%
+  dplyr::filter(!is.na(infl_length_cm)) %>%
+  ggplot(data = ., aes(x = year, y = infl_length_cm)) +
+  geom_point(aes(fill = range, shape = range), alpha = 0.45)+
+  geom_smooth(aes(color = range), formula = "y ~ x",
+              method = "lm", se = FALSE) +
   labs(x = "Year", y = "Inflorescence Length (cm)") + 
-  scale_color_manual(name = "Range", labels = c("Nonnative", "Native"), values = c("purple", "black")) +
-  geom_smooth(method = "lm") +
-  theme_classic(base_size = 20)
+  scale_color_manual(name = "Range", labels = c("Nonnative", "Native"), values = colors) +
+  scale_fill_manual(name = "Range", labels = c("Nonnative", "Native"), values = colors) +
+  scale_shape_manual(name = "Range", labels = c("Nonnative", "Native"), values = c("native" = 21, "invasive" = 23)) +
+  theme_classic(base_size = 20) +
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.2, 0.95),
+        legend.title = element_blank())
 
 # model resutls w/ 95% CIs
 model.inf <- lm(infl_length_cm ~ year * range, data = traits_v02)
@@ -248,7 +259,7 @@ ggplot(newdat, aes(x = year, y = fit, color = range, fill = range)) +
   geom_ribbon( aes(ymin = lwr, ymax = upr), alpha = 0.2, color = NA) +
   geom_line(size = 1.2) +
   labs(x = "Year", y = "Inflorescence Length (cm)", color = "Range", fill = "Range") +
-  scale_color_manual(labels = c("invasive" = "Nonnative", "native" = "Native"), values = c("purple", "black")) +
+  scale_color_manual(labels = c("invasive" = "Nonnative", "native" = "Native"), values = colors) +
   scale_fill_manual(labels = c("invasive" = "Nonnative","native" = "Native"),
-    values = c("purple", "black")) +
+    values = colors) +
   theme_classic(base_size = 20)
